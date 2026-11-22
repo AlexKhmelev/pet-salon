@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Салон питомцев" />
+  <meta name="theme-color" content="#fff5ea" />
+  <link rel="manifest" href="manifest.json?v=2" />
+  <link rel="apple-touch-icon" sizes="180x180" href="icons/apple-touch-icon.png?v=1" />
+  <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png?v=1" />
+  <link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png?v=1" />
+  <title>Салон для питомцев</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&family=Pacifico&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css?v=10" />
+  <link rel="stylesheet" href="iphone.css?v=10" />
+  <script type="module">
+    if (!('commandForElement' in HTMLButtonElement.prototype)) {
+      import('https://esm.run/invokers-polyfill');
+    }
+  </script>
+</head>
+<body>
+  <div class="device-stage">
+  <div class="salon-app phone-shell" id="salonApp" data-wall="peach" data-chairs="classic">
+    <!-- Имитация Dynamic Island и Home Indicator для предпросмотра на десктопе -->
+    <div class="iphone-dynamic-island" aria-hidden="true">
+      <span class="island-camera"></span>
+    </div>
+    <div class="iphone-home-indicator" aria-hidden="true"></div>
+
+    <!-- Уютный фон салона с креслами (CSS + декоративный слой) -->
+    <div class="salon-backdrop" aria-hidden="true">
+      <div class="salon-wall"></div>
+      <div class="salon-garland" id="decorGarland" hidden>
+        <span>✦</span><span>●</span><span>✦</span><span>●</span><span>✦</span><span>●</span><span>✦</span>
+      </div>
+      <div class="salon-window">
+        <div class="window-pane"></div>
+        <div class="window-pane"></div>
+      </div>
+      <div class="salon-mirror"></div>
+      <div class="salon-plant" id="decorPlant" hidden>🌿</div>
+      <div class="salon-chair chair-left">
+        <div class="chair-back"></div>
+        <div class="chair-visitor" id="chairVisitorLeft" aria-hidden="true"></div>
+        <div class="chair-seat"></div>
+        <div class="chair-arm arm-l"></div>
+        <div class="chair-arm arm-r"></div>
+        <div class="chair-leg leg-l"></div>
+        <div class="chair-leg leg-r"></div>
+      </div>
+      <div class="salon-chair chair-right">
+        <div class="chair-back"></div>
+        <div class="chair-visitor" id="chairVisitorRight" aria-hidden="true"></div>
+        <div class="chair-seat"></div>
+        <div class="chair-arm arm-l"></div>
+        <div class="chair-arm arm-r"></div>
+        <div class="chair-leg leg-l"></div>
+        <div class="chair-leg leg-r"></div>
+      </div>
+      <div class="salon-floor"></div>
+      <div class="salon-rug"></div>
+    </div>
+
+    <!-- ЭКРАН 1: Стартовый экран -->
+    <section class="screen start-screen is-active" id="startScreen" aria-labelledby="gameTitle">
+      <header class="start-header">
+        <h1 class="game-title" id="gameTitle">Салон для питомцев</h1>
+        <p class="game-subtitle">Приведи в порядок милых гостей и укрась свой салон</p>
+      </header>
+
+      <div class="start-body">
+        <!-- Блок кастомизации и имени питомца -->
+        <aside class="pet-setup-card" aria-label="Настройка питомца">
+          <div class="mystery-cat-box" title="Твой будущий питомец">
+            <!-- «Непонятный котик без лица» -->
+            <svg viewBox="0 0 120 120" class="mystery-cat-svg" aria-hidden="true">
+              <path d="M28 52 L22 20 L48 36 Q60 32 72 36 L98 20 L92 52 Q100 66 96 84 Q90 104 60 104 Q30 104 24 84 Q20 66 28 52 Z" fill="#f3dfc9" stroke="#8a6b52" stroke-width="3.5" stroke-linejoin="round"/>
+              <path d="M29 44 L26 27 L42 37 Z" fill="#f4b7c2"/>
+              <path d="M91 44 L94 27 L78 37 Z" fill="#f4b7c2"/>
+              <!-- Без лица — только загадочный силуэт и лёгкие усы/вопросик -->
+                <text x="60" y="76" text-anchor="middle" font-size="24" font-weight="700" fill="#6b4c38" font-family="system-ui, sans-serif">?</text>
+            </svg>
+          </div>
+          <div class="pet-name-field" id="petNameField">
+            <label class="pet-name-label" for="petNameInput">Имя питомца</label>
+            <input
+              type="text"
+              id="petNameInput"
+              class="pet-name-input"
+              maxlength="18"
+              placeholder="Лаки"
+              autocomplete="off"
+            />
+          </div>
+          <p class="save-hint" id="saveHint" hidden>Есть сохранённый прогресс</p>
+        </aside>
+      </div>
+
+      <footer class="start-footer">
+        <button type="button" class="btn-start" id="startBtn">НАЧАТЬ</button>
+      </footer>
+    </section>
+
+    <!-- ЭКРАН 2: Игровой экран -->
+    <section class="screen game-screen" id="gameScreen" aria-label="Игровая зона салона" hidden>
+      <!-- Парящая верхняя панель: ресурсы, глава, радио и звук -->
+      <header class="game-topbar">
+        <div class="header-row-top">
+          <div class="wallet-pill" aria-label="Ресурсы салона" title="Монеты и звёзды">
+            <span class="wallet-item">💰 <strong id="coinsCount">40</strong></span>
+            <span class="wallet-sep" aria-hidden="true"></span>
+            <span class="wallet-item">⭐ <strong id="starsCount">0</strong></span>
+          </div>
+          <button type="button" class="stat-chip chip-chapter chip-btn" id="chapterBadge" commandfor="chaptersDialog" command="show-modal" title="Открыть карту глав">Гл. 1 · 1/5</button>
+          <div class="header-actions">
+            <button type="button" class="btn-icon" id="radioOpenBtn" commandfor="radioDialog" command="show-modal" title="Радио салона" aria-label="Радио салона">📻</button>
+            <button type="button" class="btn-icon" id="soundToggleBtn" title="Включить или выключить звук" aria-label="Звук включён" aria-pressed="true">🔊</button>
+          </div>
+        </div>
+      </header>
+
+      <!-- Основная сцена с котиком -->
+      <main class="salon-stage" id="salonStage">
+        <div class="radio-toast" id="radioToast" hidden aria-live="polite">
+          <span class="radio-toast-ico" id="radioToastIco">☕</span>
+          <div class="radio-toast-meta">
+            <strong id="radioToastName">Lo-Fi Мур</strong>
+            <span id="radioToastFreq">98.4 FM · Уютный Lo-Fi</span>
+          </div>
+        </div>
+
+        <div class="story-bubble" id="storyBubble">
+          <div class="story-top-row">
+            <div class="guest-identity">
+              <span class="pet-display-name" id="petDisplayName">Лаки</span>
+              <span class="behavior-badge" id="behaviorBadge">🥺 Стеснительный</span>
+              <strong id="storyTitle" class="story-vip-tag" hidden></strong>
+            </div>
+            <p id="storyText" class="story-line"></p>
+          </div>
+
+          <div class="guest-progress-block">
+            <div class="mood-progress-row" aria-label="Прогресс процедур">
+              <span class="mood-emoji" id="moodEmoji" aria-hidden="true">😢</span>
+              <div class="mood-progress-track">
+                <div class="mood-progress-fill" id="moodProgressFill" style="width: 0%"></div>
+              </div>
+              <span class="mood-progress-count" id="progressText">0 / 3</span>
+            </div>
+            <div class="problems-list" id="problemsList" aria-label="Проблемы клиента"></div>
+          </div>
+
+          <div class="wish-pill" id="wishPill">
+            <span class="wish-text">💭 «Хочу бантик для фото!»</span>
+            <span class="wish-reward">+25💰</span>
+          </div>
+        </div>
+
+        <div class="gesture-hint" id="gestureHint" hidden>👆 Поводи пальцем по мордочке питомца</div>
+
+        <div class="scrub-meter" id="scrubMeter" hidden role="status" aria-live="polite">
+          <span class="scrub-label" id="scrubLabel">Очищаем…</span>
+          <div class="scrub-track">
+            <div class="scrub-fill" id="scrubFill"></div>
+          </div>
+        </div>
+
+        <div class="pet-container" id="petContainer" data-mood="0">
+          <!-- Слой эффектов и частиц -->
+          <div class="effects-layer" id="effectsLayer" aria-hidden="true"></div>
+
+          <!-- Котик (SVG с динамическими дефектами, эмоциями и аксессуарами) -->
+          <svg viewBox="0 0 320 320" class="pet-svg" id="petSvg" role="img" aria-label="Котик в салоне">
+            <defs>
+              <radialGradient id="furGrad" cx="50%" cy="40%" r="60%">
+                <stop offset="0%" id="furStopLight" stop-color="#fff4e6"/>
+                <stop offset="100%" id="furStopDark" stop-color="#e8c7a3"/>
+              </radialGradient>
+              <radialGradient id="blushGrad" cx="50%" cy="50%" r="50%">
+                <stop offset="0%" stop-color="#ff9eb5" stop-opacity="0.75"/>
+                <stop offset="100%" stop-color="#ff9eb5" stop-opacity="0"/>
+              </radialGradient>
+            </defs>
+
+            <!-- Тельце -->
+            <ellipse cx="160" cy="268" rx="76" ry="52" fill="url(#furGrad)" stroke="#7a5a40" stroke-width="4"/>
+
+            <!-- Ушки -->
+            <g class="cat-ears" id="earsCat">
+              <path d="M84 128 L66 56 L128 88 Z" fill="url(#furGrad)" stroke="#7a5a40" stroke-width="4" stroke-linejoin="round"/>
+              <path d="M86 116 L76 72 L116 92 Z" fill="#f7b7c4"/>
+              <path d="M236 128 L254 56 L192 88 Z" fill="url(#furGrad)" stroke="#7a5a40" stroke-width="4" stroke-linejoin="round"/>
+              <path d="M234 116 L244 72 L204 92 Z" fill="#f7b7c4"/>
+            </g>
+            <g id="earsDog" hidden>
+              <ellipse cx="70" cy="152" rx="24" ry="48" transform="rotate(18 70 152)" fill="#b98b63" stroke="#7a5a40" stroke-width="4"/>
+              <ellipse cx="250" cy="152" rx="24" ry="48" transform="rotate(-18 250 152)" fill="#b98b63" stroke="#7a5a40" stroke-width="4"/>
+            </g>
+            <g id="earsRaccoon" hidden>
+              <circle cx="92" cy="86" r="24" fill="#8b8e99" stroke="#4f525c" stroke-width="4"/>
+              <circle cx="92" cy="86" r="12" fill="#e2e4ea"/>
+              <circle cx="228" cy="86" r="24" fill="#8b8e99" stroke="#4f525c" stroke-width="4"/>
+              <circle cx="228" cy="86" r="12" fill="#e2e4ea"/>
+            </g>
+            <g id="earsBunny" hidden>
+              <ellipse cx="114" cy="64" rx="18" ry="48" transform="rotate(-12 114 64)" fill="url(#furGrad)" stroke="#7a5a40" stroke-width="4"/>
+              <ellipse cx="114" cy="68" rx="9" ry="32" transform="rotate(-12 114 68)" fill="#f7b7c4"/>
+              <ellipse cx="206" cy="64" rx="18" ry="48" transform="rotate(12 206 64)" fill="url(#furGrad)" stroke="#7a5a40" stroke-width="4"/>
+              <ellipse cx="206" cy="68" rx="9" ry="32" transform="rotate(12 206 68)" fill="#f7b7c4"/>
+            </g>
+            <g id="earsFox" hidden>
+              <path d="M80 124 L56 44 L132 84 Z" fill="#e07a3a" stroke="#7a421f" stroke-width="4" stroke-linejoin="round"/>
+              <path d="M84 112 L68 62 L116 88 Z" fill="#fff5eb"/>
+              <path d="M240 124 L264 44 L188 84 Z" fill="#e07a3a" stroke="#7a421f" stroke-width="4" stroke-linejoin="round"/>
+              <path d="M236 112 L252 62 L204 88 Z" fill="#fff5eb"/>
+            </g>
+            <g id="earsPanda" hidden>
+              <circle cx="90" cy="86" r="26" fill="#2b2d34" stroke="#18191e" stroke-width="4"/>
+              <circle cx="230" cy="86" r="26" fill="#2b2d34" stroke="#18191e" stroke-width="4"/>
+            </g>
+            <g id="earsBear" hidden>
+              <circle cx="90" cy="88" r="26" fill="url(#furGrad)" stroke="#7a5a40" stroke-width="4"/>
+              <circle cx="90" cy="88" r="13" fill="#e8b89a"/>
+              <circle cx="230" cy="88" r="26" fill="url(#furGrad)" stroke="#7a5a40" stroke-width="4"/>
+              <circle cx="230" cy="88" r="13" fill="#e8b89a"/>
+            </g>
+            <g id="earsHamster" hidden>
+              <circle cx="96" cy="96" r="19" fill="url(#furGrad)" stroke="#7a5a40" stroke-width="4"/>
+              <circle cx="96" cy="96" r="9" fill="#f7b7c4"/>
+              <circle cx="224" cy="96" r="19" fill="url(#furGrad)" stroke="#7a5a40" stroke-width="4"/>
+              <circle cx="224" cy="96" r="9" fill="#f7b7c4"/>
+            </g>
+
+            <!-- Голова -->
+            <ellipse cx="160" cy="158" rx="92" ry="82" fill="url(#furGrad)" stroke="#7a5a40" stroke-width="4"/>
+
+            <g id="raccoonMask" hidden>
+              <ellipse cx="122" cy="152" rx="28" ry="22" fill="#5b5f6b" opacity="0.52"/>
+              <ellipse cx="198" cy="152" rx="28" ry="22" fill="#5b5f6b" opacity="0.52"/>
+            </g>
+            <g id="pandaSpots" hidden>
+              <ellipse cx="120" cy="154" rx="24" ry="20" transform="rotate(-12 120 154)" fill="#2b2d34" opacity="0.72"/>
+              <ellipse cx="200" cy="154" rx="24" ry="20" transform="rotate(12 200 154)" fill="#2b2d34" opacity="0.72"/>
+            </g>
+
+            <!-- ДЕФЕКТ: Грязь (губка) -->
+            <g class="defect defect-dirt" id="defectDirt">
+              <ellipse cx="102" cy="190" rx="18" ry="10" fill="#7c5d41" opacity="0.72" transform="rotate(-14 102 190)"/>
+              <ellipse cx="222" cy="184" rx="16" ry="9" fill="#7c5d41" opacity="0.68" transform="rotate(16 222 184)"/>
+              <circle cx="160" cy="98" r="10" fill="#7c5d41" opacity="0.62"/>
+            </g>
+
+            <!-- Румянец (появляется, когда котик становится радостным) -->
+            <g class="blush-layer">
+              <ellipse cx="104" cy="182" rx="20" ry="12" fill="url(#blushGrad)"/>
+              <ellipse cx="216" cy="182" rx="20" ry="12" fill="url(#blushGrad)"/>
+            </g>
+
+            <!-- ДЕФЕКТ 1: Синяки под глазами (убираются патчами) -->
+            <g class="defect defect-eyebags" id="defectEyebags">
+              <path d="M100 166 Q122 184 144 166 Q122 175 100 166 Z" fill="#63537d" opacity="0.72"/>
+              <path d="M176 166 Q198 184 220 166 Q198 175 176 166 Z" fill="#63537d" opacity="0.72"/>
+              <ellipse cx="122" cy="171" rx="18" ry="6" fill="#7c6999" opacity="0.45"/>
+              <ellipse cx="198" cy="171" rx="18" ry="6" fill="#7c6999" opacity="0.45"/>
+            </g>
+
+            <!-- Глазки (меняются в зависимости от настроения) -->
+            <g class="cat-eyes">
+              <!-- Обычные / грустные глаза -->
+              <g class="eyes-open">
+                <ellipse cx="122" cy="152" rx="14" ry="16" fill="#2d2320"/>
+                <ellipse cx="198" cy="152" rx="14" ry="16" fill="#2d2320"/>
+                <circle cx="117" cy="146" r="4.5" fill="#ffffff"/>
+                <circle cx="193" cy="146" r="4.5" fill="#ffffff"/>
+                <circle cx="126" cy="158" r="2" fill="#ffffff" opacity="0.8"/>
+                <circle cx="202" cy="158" r="2" fill="#ffffff" opacity="0.8"/>
+              </g>
+              <!-- Грустные веки и слезинка (mood 0) -->
+              <g class="eyes-sad-overlay">
+                <path d="M104 146 Q122 135 140 142" fill="none" stroke="#7a5a40" stroke-width="3.5" stroke-linecap="round"/>
+                <path d="M180 142 Q198 135 216 146" fill="none" stroke="#7a5a40" stroke-width="3.5" stroke-linecap="round"/>
+                <path d="M106 162 Q102 174 108 176 Q114 174 106 162 Z" fill="#82cfff" opacity="0.9"/>
+              </g>
+              <!-- Счастливые прищуренные глаза-дуги (mood 3) -->
+              <g class="eyes-happy">
+                <path d="M106 156 Q122 136 138 156" fill="none" stroke="#2d2320" stroke-width="5" stroke-linecap="round"/>
+                <path d="M182 156 Q198 136 214 156" fill="none" stroke="#2d2320" stroke-width="5" stroke-linecap="round"/>
+              </g>
+            </g>
+
+            <!-- ДЕФЕКТ 2: Монобровь (убирается щипцами) -->
+            <g class="defect defect-unibrow" id="defectUnibrow">
+              <path d="M102 128 Q130 120 160 127 Q190 120 218 128 Q192 138 160 135 Q128 138 102 128 Z" fill="#463227"/>
+              <path d="M112 126 L116 134 M128 124 L131 134 M145 125 L147 134 M160 126 L160 135 M175 125 L173 134 M192 124 L189 134 M206 126 L203 134" stroke="#2a1d16" stroke-width="2" stroke-linecap="round"/>
+            </g>
+
+            <!-- Носик и усы -->
+            <polygon points="153,174 167,174 160,183" fill="#eb8a9b" stroke="#7a5a40" stroke-width="2" stroke-linejoin="round"/>
+            <g stroke="#7a5a40" stroke-width="2.5" stroke-linecap="round" opacity="0.7">
+              <line x1="68" y1="172" x2="104" y2="176"/>
+              <line x1="64" y1="186" x2="102" y2="186"/>
+              <line x1="252" y1="172" x2="216" y2="176"/>
+              <line x1="256" y1="186" x2="218" y2="186"/>
+            </g>
+
+            <!-- Ротик (4 состояния настроения) -->
+            <g class="cat-mouth">
+              <path class="mouth-0" d="M144 202 Q160 188 176 202" fill="none" stroke="#7a5a40" stroke-width="3.8" stroke-linecap="round"/>
+              <path class="mouth-1" d="M146 196 Q160 198 174 196" fill="none" stroke="#7a5a40" stroke-width="3.8" stroke-linecap="round"/>
+              <path class="mouth-2" d="M142 190 Q151 204 160 194 Q169 204 178 190" fill="none" stroke="#7a5a40" stroke-width="3.8" stroke-linecap="round"/>
+              <g class="mouth-3">
+                <path d="M140 188 Q150 205 160 193 Q170 205 180 188" fill="none" stroke="#7a5a40" stroke-width="4" stroke-linecap="round"/>
+                <path d="M152 197 Q160 212 168 197 Z" fill="#ff85a1" stroke="#7a5a40" stroke-width="2"/>
+              </g>
+            </g>
+
+            <!-- ДЕФЕКТ 3: Прыщи (убираются маской для лица) -->
+            <g class="defect defect-pimples" id="defectPimples">
+              <circle cx="96" cy="164" r="6" fill="#e65353"/>
+              <circle cx="94" cy="162" r="2" fill="#ffe0a3"/>
+
+              <circle cx="110" cy="196" r="5" fill="#e65353"/>
+              <circle cx="109" cy="195" r="1.7" fill="#ffe0a3"/>
+
+              <circle cx="222" cy="168" r="6.5" fill="#e65353"/>
+              <circle cx="220" cy="166" r="2.2" fill="#ffe0a3"/>
+
+              <circle cx="208" cy="198" r="5" fill="#e65353"/>
+              <circle cx="207" cy="197" r="1.7" fill="#ffe0a3"/>
+
+              <circle cx="160" cy="106" r="5.5" fill="#e65353"/>
+              <circle cx="158" cy="104" r="1.8" fill="#ffe0a3"/>
+            </g>
+
+            <!-- ДЕФЕКТ: Колтуны (расчёска) -->
+            <g class="defect defect-tangles" id="defectTangles">
+              <path d="M72 136 Q62 126 76 118 Q84 130 72 136 Z" fill="#c79e77" stroke="#7a5a40" stroke-width="2.5"/>
+              <path d="M244 134 Q258 126 246 114 Q236 126 244 134 Z" fill="#c79e77" stroke="#7a5a40" stroke-width="2.5"/>
+              <path d="M148 76 Q160 62 172 78 Q160 84 148 76 Z" fill="#c79e77" stroke="#7a5a40" stroke-width="2.5"/>
+            </g>
+
+            <!-- ДЕФЕКТ: Мокрая шерсть (фен) -->
+            <g class="defect defect-wet" id="defectWet">
+              <path d="M108 104 Q102 118 110 120 Q118 118 108 104 Z" fill="#6cc4ff" stroke="#2d8cd4" stroke-width="2"/>
+              <path d="M214 106 Q208 120 216 122 Q224 120 214 106 Z" fill="#6cc4ff" stroke="#2d8cd4" stroke-width="2"/>
+              <path d="M184 90 Q179 102 186 104 Q193 102 184 90 Z" fill="#6cc4ff" stroke="#2d8cd4" stroke-width="2"/>
+            </g>
+
+            <!-- АКСЕССУАРЫ И ОДЕЖДА (50 динамических элементов) -->
+            <g id="dynamicWardrobeLayer"></g>
+
+            <!-- Лапки (всегда видны поверх одежды) -->
+            <g class="pet-paws" id="petPaws">
+              <!-- Левая лапка -->
+              <ellipse cx="116" cy="298" rx="24" ry="16" fill="url(#furGrad)" stroke="#7a5a40" stroke-width="3.5"/>
+              <ellipse cx="116" cy="301" rx="9" ry="6" fill="#f7b7c4" opacity="0.85"/>
+              <circle cx="106" cy="293" r="3.4" fill="#f7b7c4" opacity="0.85"/>
+              <circle cx="116" cy="290" r="3.6" fill="#f7b7c4" opacity="0.85"/>
+              <circle cx="126" cy="293" r="3.4" fill="#f7b7c4" opacity="0.85"/>
+              <!-- Правая лапка -->
+              <ellipse cx="204" cy="298" rx="24" ry="16" fill="url(#furGrad)" stroke="#7a5a40" stroke-width="3.5"/>
+              <ellipse cx="204" cy="301" rx="9" ry="6" fill="#f7b7c4" opacity="0.85"/>
+              <circle cx="194" cy="293" r="3.4" fill="#f7b7c4" opacity="0.85"/>
+              <circle cx="204" cy="290" r="3.6" fill="#f7b7c4" opacity="0.85"/>
+              <circle cx="214" cy="293" r="3.4" fill="#f7b7c4" opacity="0.85"/>
+            </g>
+          </svg>
+
+          <!-- Невидимые интерактивные зоны-хитбоксы поверх котика -->
+          <div class="drop-zone zone-unibrow" data-zone="unibrow" aria-label="Зона моноброви"></div>
+          <div class="drop-zone zone-eyebags" data-zone="eyebags" aria-label="Зона под глазами"></div>
+          <div class="drop-zone zone-pimples" data-zone="pimples" aria-label="Зона лица с прыщами"></div>
+          <div class="drop-zone zone-dirt" data-zone="dirt" aria-label="Зона с грязью"></div>
+          <div class="drop-zone zone-tangles" data-zone="tangles" aria-label="Зона с колтунами"></div>
+          <div class="drop-zone zone-wet" data-zone="wet" aria-label="Зона мокрой шерсти"></div>
+        </div>
+
+        <!-- Активный выбранный инструмент сбоку от персонажа (следует за пальцем по мордочке) -->
+        <div class="active-tool-dock" id="activeToolDock" hidden aria-hidden="true">
+          <div class="active-tool-sprite" id="activeToolSprite"></div>
+        </div>
+
+        <div class="complete-bar" id="completeBar" hidden>
+          <button type="button" class="btn-next-client" id="nextClientBtn">Следующий клиент →</button>
+        </div>
+      </main>
+
+      <!-- Нижняя панель: переключатель Уход/Образ, активная полочка и навигация -->
+      <footer class="salon-dock">
+        <div class="dock-mode-bar" role="tablist" aria-label="Режим нижней панели">
+          <button type="button" class="dock-mode-btn is-active" id="dockModeCare" data-dock-mode="care" role="tab" aria-selected="true">🧴 Уход</button>
+          <button type="button" class="dock-mode-btn" id="dockModeStyle" data-dock-mode="style" role="tab" aria-selected="false">
+            👗 Образ <span class="mode-dot" id="styleModeDot" hidden></span>
+          </button>
+        </div>
+        <div class="tools-tray" id="toolsTray" role="group" aria-label="Инструменты салона"></div>
+        <div class="accessories-strip" id="accessoriesStrip" role="group" aria-label="Одежда и аксессуары" hidden></div>
+        <nav class="bottom-nav" aria-label="Разделы салона">
+          <button type="button" class="nav-btn" commandfor="shopDialog" command="show-modal">
+            <span class="nav-ico" aria-hidden="true">🛍️</span><span>Магазин</span>
+          </button>
+          <button type="button" class="nav-btn" commandfor="questsDialog" command="show-modal">
+            <span class="nav-ico" aria-hidden="true">📋</span><span>Задания</span>
+            <span class="nav-dot" id="questsDot" hidden></span>
+          </button>
+          <button type="button" class="nav-btn" commandfor="dailyDialog" command="show-modal">
+            <span class="nav-ico" aria-hidden="true">🎁</span><span>Бонус</span>
+            <span class="nav-dot" id="dailyDot" hidden></span>
+          </button>
+        </nav>
+      </footer>
+    </section>
+
+    <!-- Модальные окна (<dialog>) -->
+    <dialog class="sheet-dialog" id="shopDialog" aria-labelledby="shopTitle">
+      <div class="sheet-header">
+        <h2 id="shopTitle">🛍️ Магазин салона</h2>
+        <button type="button" class="btn-icon" commandfor="shopDialog" command="close" aria-label="Закрыть магазин">✕</button>
+      </div>
+      <div class="shop-tabs" role="tablist">
+        <button type="button" class="tab-btn is-active" data-shop-tab="tools" role="tab" aria-selected="true">Инструменты</button>
+        <button type="button" class="tab-btn" data-shop-tab="decor" role="tab" aria-selected="false">Интерьер</button>
+        <button type="button" class="tab-btn" data-shop-tab="accessories" role="tab" aria-selected="false">Одежда (50)</button>
+      </div>
+      <div class="sheet-body" id="shopList"></div>
+    </dialog>
+
+    <dialog class="sheet-dialog" id="questsDialog" aria-labelledby="questsTitle">
+      <div class="sheet-header">
+        <h2 id="questsTitle">📋 Задания и достижения</h2>
+        <button type="button" class="btn-icon" commandfor="questsDialog" command="close" aria-label="Закрыть задания">✕</button>
+      </div>
+      <div class="sheet-body" id="questsBody"></div>
+    </dialog>
+
+    <dialog class="sheet-dialog" id="dailyDialog" aria-labelledby="dailyTitle">
+      <div class="sheet-header">
+        <h2 id="dailyTitle">🎁 Ежедневный бонус</h2>
+        <button type="button" class="btn-icon" commandfor="dailyDialog" command="close" aria-label="Закрыть бонус">✕</button>
+      </div>
+      <div class="sheet-body" id="dailyBody"></div>
+    </dialog>
+
+    <dialog class="sheet-dialog" id="chaptersDialog" aria-labelledby="chaptersTitle">
+      <div class="sheet-header">
+        <h2 id="chaptersTitle">🗺️ Карта глав (10 глав · 50 гостей)</h2>
+        <button type="button" class="btn-icon" commandfor="chaptersDialog" command="close" aria-label="Закрыть карту глав">✕</button>
+      </div>
+      <div class="sheet-body" id="chaptersBody"></div>
+    </dialog>
+
+    <dialog class="sheet-dialog" id="radioDialog" aria-labelledby="radioTitle">
+      <div class="sheet-header">
+        <h2 id="radioTitle">📻 Радио салона</h2>
+        <button type="button" class="btn-icon" commandfor="radioDialog" command="close" aria-label="Закрыть радио">✕</button>
+      </div>
+      <div class="sheet-body radio-body">
+        <div class="header-nowplaying is-empty" id="headerNowPlaying">
+          <span class="np-icon" id="npIcon" aria-hidden="true">🎵</span>
+          <span class="np-text" id="npText">Kawaii Pop · В эфире</span>
+        </div>
+        <div class="radio-wheel" id="radioWheel" role="radiogroup" aria-label="Выбор радиостанции">
+          <div class="radio-center" id="radioCenter">
+            <span class="radio-center-ico" id="radioCenterIco">☕</span>
+            <strong class="radio-center-name" id="radioCenterName">Lo-Fi Мур</strong>
+            <span class="radio-center-freq" id="radioCenterFreq">98.4 FM</span>
+            <span class="radio-center-genre" id="radioCenterGenre">Уютный Lo-Fi</span>
+          </div>
+        </div>
+      </div>
+    </dialog>
+
+    <!-- Живая область для скринридеров -->
+    <div class="visually-hidden" id="liveRegion" aria-live="polite"></div>
+  </div>
+  </div>
+
+  <script src="game-data.js?v=4"></script>
+  <script src="problems-100.js?v=4"></script>
+  <script src="characters-50.js?v=4"></script>
+  <script src="wardrobe-50.js?v=4"></script>
+  <script src="radio.js?v=4"></script>
+  <script src="app.js?v=9"></script>
+</body>
+</html>

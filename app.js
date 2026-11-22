@@ -68,7 +68,7 @@
       soundEnabled: true,
       radio: {
         station: 'off',
-        volume: 0.45,
+        volume: 0.25,
       },
       player: {
         customPetName: DEFAULT_NAME,
@@ -350,17 +350,20 @@
     return audioCtx;
   }
 
+  const SFX_MASTER_GAIN = 2.0;
+
   function playTone({ freq = 520, endFreq = 780, duration = 0.14, type = 'sine', gain = 0.14, delay = 0 }) {
     const ctx = getAudioCtx();
     if (!ctx) return;
     const now = ctx.currentTime + delay;
     const osc = ctx.createOscillator();
     const vol = ctx.createGain();
+    const peakGain = Math.min(0.42, gain * SFX_MASTER_GAIN);
     osc.type = type;
     osc.frequency.setValueAtTime(freq, now);
     osc.frequency.exponentialRampToValueAtTime(Math.max(40, endFreq), now + duration);
     vol.gain.setValueAtTime(0.001, now);
-    vol.gain.linearRampToValueAtTime(gain, now + 0.02);
+    vol.gain.linearRampToValueAtTime(peakGain, now + 0.02);
     vol.gain.exponentialRampToValueAtTime(0.001, now + duration);
     osc.connect(vol);
     vol.connect(ctx.destination);
@@ -369,6 +372,7 @@
   }
 
   function playProcedureSound(zone) {
+    if (RADIO?.duck) RADIO.duck(700);
     const map = {
       unibrow: [420, 960],
       eyebags: [520, 820],
@@ -383,6 +387,7 @@
   }
 
   function playVictorySound() {
+    if (RADIO?.duck) RADIO.duck(1200);
     [523.25, 659.25, 783.99, 1046.5].forEach((n, i) => {
       playTone({ freq: n, endFreq: n * 1.02, duration: 0.22, type: 'triangle', gain: 0.16, delay: i * 0.09 });
     });
@@ -1745,7 +1750,7 @@
     const radioVolValue = document.getElementById('radioVolValue');
 
     function applyRadioVolumeUi(vol01) {
-      const clamped = Math.max(0, Math.min(1, Number.isFinite(vol01) ? vol01 : 0.65));
+      const clamped = Math.max(0, Math.min(1, Number.isFinite(vol01) ? vol01 : 0.25));
       const pct = Math.round(clamped * 100);
       RADIO.setVolume(clamped);
       if (radioVolumeSlider) {
@@ -1758,7 +1763,7 @@
       }
     }
 
-    const savedVol = typeof state.radio.volume === 'number' ? state.radio.volume : 0.65;
+    const savedVol = typeof state.radio.volume === 'number' ? state.radio.volume : 0.25;
     applyRadioVolumeUi(savedVol);
 
     if (radioVolumeSlider) {

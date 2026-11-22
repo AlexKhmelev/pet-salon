@@ -205,8 +205,7 @@
     emitStatus('connecting');
 
     el.src = st.streams[currentStreamIdx];
-    el.muted = muted;
-    el.volume = muted ? 0 : volume;
+    applyElementVolume();
     if (muted) {
       el.pause();
       return;
@@ -226,6 +225,22 @@
     }, 7000);
   }
 
+  const MAX_RADIO_GAIN = 0.55;
+  let duckFactor = 1;
+  let duckTimer = null;
+
+  function getEffectiveVolume() {
+    if (muted || volume <= 0.001) return 0;
+    return Math.pow(volume, 1.35) * MAX_RADIO_GAIN * duckFactor;
+  }
+
+  function applyElementVolume() {
+    if (!audioEl) return;
+    const eff = getEffectiveVolume();
+    audioEl.volume = eff;
+    audioEl.muted = muted || volume <= 0.001;
+  }
+
   function updateAudioVolume() {
     if (muted) {
       // На iOS Safari полностью останавливаем поток, чтобы звук пропал мгновенно
@@ -235,10 +250,7 @@
       return;
     }
     if (ctx && ctx.state === 'suspended') ctx.resume().catch(() => {});
-    if (audioEl) {
-      audioEl.volume = volume;
-      audioEl.muted = volume <= 0.001;
-    }
+    applyElementVolume();
     if (currentStationId !== 'off' && (!audioEl || !audioEl.src || audioEl.paused)) {
       playCurrentStreamUrl();
     }
@@ -247,7 +259,7 @@
   // Короткий радио-шипок настройки частоты (как в GTA)
   function playStaticBurst() {
     const c = ensureContext();
-    if (!c || muted) return;
+    if (!c || muted || volume <= 0.001) return;
     const duration = 0.14;
     const bufferSize = Math.floor(c.sampleRate * duration);
     const buffer = c.createBuffer(1, bufferSize, c.sampleRate);
@@ -264,7 +276,7 @@
     filter.Q.value = 1.4;
 
     const g = c.createGain();
-    g.gain.value = Math.min(0.18, volume * 0.35);
+    g.gain.value = Math.min(0.08, Math.max(0.02, getEffectiveVolume() * 0.45));
 
     noise.connect(filter);
     filter.connect(g);
@@ -317,13 +329,20 @@
     },
     setVolume(v) {
       volume = Math.max(0, Math.min(1, Number(v) || 0));
-      if (audioEl) {
-        audioEl.volume = volume;
-        audioEl.muted = muted || volume <= 0.001;
-      }
+      applyElementVolume();
     },
     getVolume() {
       return volume;
+    },
+    duck(durationMs = 800) {
+      if (muted || currentStationId === 'off') return;
+      duckFactor = 0.35;
+      applyElementVolume();
+      clearTimeout(duckTimer);
+      duckTimer = window.setTimeout(() => {
+        duckFactor = 1;
+        applyElementVolume();
+      }, durationMs);
     },
     setMuted(isMuted) {
       muted = Boolean(isMuted);

@@ -67,7 +67,7 @@
       screen: 'start',
       soundEnabled: true,
       radio: {
-        station: 'lofi',
+        station: 'off',
         volume: 0.45,
       },
       player: {
@@ -1773,7 +1773,9 @@
     }
 
     RADIO.setMuted(!state.soundEnabled);
-    const initSt = RADIO.setStation(state.radio.station || 'kpop', { withStatic: false, autoplay: false });
+    // По умолчанию при входе радио выключено — запускается только по выбору станции в 📻
+    state.radio.station = 'off';
+    const initSt = RADIO.setStation('off', { withStatic: false, autoplay: false });
     updateHeaderNowPlaying(RADIO.getNowPlaying(), initSt);
 
     document.querySelectorAll('[commandfor="radioDialog"]').forEach((el) => {

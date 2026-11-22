@@ -1739,7 +1739,39 @@
     if (state.radio.station === 'night') state.radio.station = 'jazz';
 
     RADIO.onTrackChange((info, st) => updateHeaderNowPlaying(info, st));
-    RADIO.setVolume(1);
+
+    const radioVolumeSlider = document.getElementById('radioVolumeSlider');
+    const radioVolIcon = document.getElementById('radioVolIcon');
+    const radioVolValue = document.getElementById('radioVolValue');
+
+    function applyRadioVolumeUi(vol01) {
+      const clamped = Math.max(0, Math.min(1, Number.isFinite(vol01) ? vol01 : 0.65));
+      const pct = Math.round(clamped * 100);
+      RADIO.setVolume(clamped);
+      if (radioVolumeSlider) {
+        radioVolumeSlider.value = String(pct);
+        radioVolumeSlider.style.setProperty('--vol-pct', `${pct}%`);
+      }
+      if (radioVolValue) radioVolValue.textContent = `${pct}%`;
+      if (radioVolIcon) {
+        radioVolIcon.textContent = pct === 0 ? '🔇' : pct <= 35 ? '🔈' : pct <= 70 ? '🔉' : '🔊';
+      }
+    }
+
+    const savedVol = typeof state.radio.volume === 'number' ? state.radio.volume : 0.65;
+    applyRadioVolumeUi(savedVol);
+
+    if (radioVolumeSlider) {
+      radioVolumeSlider.addEventListener('input', () => {
+        const vol01 = Number(radioVolumeSlider.value) / 100;
+        state.radio.volume = vol01;
+        applyRadioVolumeUi(vol01);
+      });
+      radioVolumeSlider.addEventListener('change', () => {
+        saveState();
+      });
+    }
+
     RADIO.setMuted(!state.soundEnabled);
     const initSt = RADIO.setStation(state.radio.station || 'kpop', { withStatic: false, autoplay: false });
     updateHeaderNowPlaying(RADIO.getNowPlaying(), initSt);

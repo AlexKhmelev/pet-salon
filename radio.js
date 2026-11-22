@@ -236,10 +236,10 @@
     }
     if (ctx && ctx.state === 'suspended') ctx.resume().catch(() => {});
     if (audioEl) {
-      audioEl.muted = false;
       audioEl.volume = volume;
+      audioEl.muted = volume <= 0.001;
     }
-    if (currentStationId !== 'off') {
+    if (currentStationId !== 'off' && (!audioEl || !audioEl.src || audioEl.paused)) {
       playCurrentStreamUrl();
     }
   }
@@ -317,7 +317,13 @@
     },
     setVolume(v) {
       volume = Math.max(0, Math.min(1, Number(v) || 0));
-      updateAudioVolume();
+      if (audioEl) {
+        audioEl.volume = volume;
+        audioEl.muted = muted || volume <= 0.001;
+      }
+    },
+    getVolume() {
+      return volume;
     },
     setMuted(isMuted) {
       muted = Boolean(isMuted);

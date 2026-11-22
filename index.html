@@ -16,8 +16,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&family=Pacifico&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="style.css?v=10" />
-  <link rel="stylesheet" href="iphone.css?v=10" />
+  <link rel="stylesheet" href="style.css?v=11" />
+  <link rel="stylesheet" href="iphone.css?v=11" />
   <script type="module">
     if (!('commandForElement' in HTMLButtonElement.prototype)) {
       import('https://esm.run/invokers-polyfill');
@@ -473,6 +473,20 @@
             <span class="radio-center-genre" id="radioCenterGenre">Уютный Lo-Fi</span>
           </div>
         </div>
+        <div class="radio-volume-bar" aria-label="Громкость радио">
+          <span class="radio-vol-ico" id="radioVolIcon" aria-hidden="true">🔉</span>
+          <input
+            type="range"
+            id="radioVolumeSlider"
+            class="radio-vol-slider"
+            min="0"
+            max="100"
+            step="1"
+            value="65"
+            aria-label="Громкость радио"
+          />
+          <span class="radio-vol-val" id="radioVolValue">65%</span>
+        </div>
       </div>
     </dialog>
 
@@ -485,7 +499,7 @@
   <script src="problems-100.js?v=4"></script>
   <script src="characters-50.js?v=4"></script>
   <script src="wardrobe-50.js?v=4"></script>
-  <script src="radio.js?v=4"></script>
-  <script src="app.js?v=9"></script>
+  <script src="radio.js?v=5"></script>
+  <script src="app.js?v=10"></script>
 </body>
 </html>

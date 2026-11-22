@@ -1647,6 +1647,74 @@ svg [hidden] {
   text-overflow: ellipsis;
 }
 
+.radio-volume-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  min-block-size: 44px;
+  padding: 6px 12px;
+  border-radius: 16px;
+  border: 1.5px solid #ead4c0;
+  background: #fff7ee;
+}
+
+.radio-vol-ico {
+  font-size: 1.05rem;
+  line-height: 1;
+  flex-shrink: 0;
+  width: 22px;
+  text-align: center;
+}
+
+.radio-vol-slider {
+  flex: 1 1 auto;
+  height: 8px;
+  border-radius: 999px;
+  appearance: none;
+  -webkit-appearance: none;
+  background: linear-gradient(
+    to right,
+    var(--accent-pink) 0%,
+    var(--accent-pink) var(--vol-pct, 65%),
+    #ead8c6 var(--vol-pct, 65%),
+    #ead8c6 100%
+  );
+  outline: none;
+  cursor: pointer;
+}
+
+.radio-vol-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--accent-pink);
+  border: 2.5px solid #ffffff;
+  box-shadow: 0 2px 6px rgba(92, 61, 38, 0.25);
+  cursor: pointer;
+}
+
+.radio-vol-slider::-moz-range-thumb {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--accent-pink);
+  border: 2.5px solid #ffffff;
+  box-shadow: 0 2px 6px rgba(92, 61, 38, 0.25);
+  cursor: pointer;
+}
+
+.radio-vol-val {
+  min-inline-size: 36px;
+  text-align: right;
+  font-size: 0.78rem;
+  font-weight: 900;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-main);
+  flex-shrink: 0;
+}
+
 .radio-toast {
   position: absolute;
   top: 4px;

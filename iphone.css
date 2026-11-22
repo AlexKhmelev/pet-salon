@@ -136,6 +136,7 @@ p, li {
     height: 100%;
     overflow: hidden;
     overscroll-behavior: none;
+    background: #d8b18f;
   }
 
   .device-stage {
@@ -162,9 +163,26 @@ p, li {
   .screen {
     height: 100%;
     padding-top: max(12px, calc(env(safe-area-inset-top, 0px) + 4px));
-    padding-bottom: max(8px, env(safe-area-inset-bottom, 0px));
+    padding-bottom: max(12px, env(safe-area-inset-bottom, 0px));
     padding-left: max(10px, env(safe-area-inset-left, 0px));
     padding-right: max(10px, env(safe-area-inset-right, 0px));
+  }
+}
+
+/* iOS Standalone PWA (экран «Домой»): 100lvh перекрывает баг WebKit с полосой ~54px внизу */
+@media (display-mode: standalone) {
+  html,
+  body,
+  .device-stage,
+  .salon-app.phone-shell {
+    height: 100vh;
+    height: 100lvh;
+    min-height: 100lvh;
+  }
+
+  .device-stage,
+  .salon-app.phone-shell {
+    bottom: auto;
   }
 }
 
@@ -758,7 +776,12 @@ p, li {
   align-items: center;
   gap: 6px;
   min-inline-size: 0;
-  flex: 1 1 auto;
+  flex: 0 1 auto;
+}
+
+.guest-identity .pet-display-name {
+  flex-shrink: 0;
+  max-width: 132px;
 }
 
 .story-vip-tag {
@@ -774,7 +797,7 @@ p, li {
 }
 
 .story-bubble p {
-  font-size: 0.76rem;
+  font-size: 0.74rem;
   font-weight: 800;
   color: var(--text-muted);
   margin: 0;
@@ -784,8 +807,8 @@ p, li {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  flex-shrink: 0;
-  max-width: 52%;
+  flex: 1 1 0;
+  min-inline-size: 0;
 }
 
 .story-bubble p.is-complete {
